@@ -1,4 +1,4 @@
-import { TweenMax } from 'gsap';
+import { TweenMax, Sine, Back } from 'gsap';
 mapboxgl.accessToken = 'pk.eyJ1IjoiYWRhcHQtYXNtdXNzZW4iLCJhIjoiY2pnN3h3dmUxMzB4aDJ5bW9vb2IzNmliMSJ9.Xp1FKOwzQ9s8Q9ZEUuwZeg';
 
 let sources = [];
@@ -36,7 +36,19 @@ const addFeatures = (geojson, target) => {
     const marker = new mapboxgl.Marker(markerEl)
       .setLngLat(feature.geometry.coordinates)
       .addTo(map);
-    TweenMax.from(marker, 2, {alpha:0});
+    TweenMax.from(markerEl, 2, {alpha:0, delay: Math.random()});
+  })
+}
+
+const addTempFeatures = (data, target) => {
+  JSON.parse(data).forEach((item, i) => {
+    if (i > 0 ) return;
+    const markerEl = getMarker();
+    const marker = new mapboxgl.Marker(markerEl)
+      .setLngLat([item.Lat, item.Lon])
+      .addTo(map);
+    TweenMax.from(markerEl, .35, {ease: Back.easeOut, alpha:0, scale:0, delay: Math.random()});
+    TweenMax.to(markerEl, .35, {ease: Sine.easeOut, alpha:0, scale:30, delay: 5});
   })
 }
 
@@ -59,9 +71,9 @@ const setupWebSocket = () => {
   };
 
   web_socket.onmessage = (event) => {
-    console.log(event.data);
+    // console.log(event.data);
+    addTempFeatures(event.data, map);
   }
-  console.log("hej");
 }
 
 const websocket_connection = (setupWebSocket)(); 
@@ -87,6 +99,6 @@ map.on('load', function () {
   
   // addSource(map, 'cola', points);
 
-  addFeatures(points, map);
+  // addFeatures(points, map);
 
 });
