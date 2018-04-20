@@ -1,2 +1,17 @@
 /vendor/
 /.idea
+
+node_modules
+npm-debug.log*
+
+.#*
+*.org
+
+.DS_Store
+
+
+fe_src/node_modules
+fe_src/npm-debug.log*
+fe_src/.yarn_cache/*
+fe_src/!.yarn_cache/.gitkeep
+fe_src/yarn-error.log
