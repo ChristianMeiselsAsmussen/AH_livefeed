@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"fmt"
 	"time"
+  "io"
+  "os"
 	"io/ioutil"
 	"github.com/gorilla/websocket"
 	"encoding/json"
@@ -20,9 +22,13 @@ import (
 var brands = readBrands()
 var postCodes = readPostCodes()
 
-var addr = flag.String("addr", "localhost:8080", "http service address")
+var addr = flag.String("addr", "localhost:8888", "http service address")
 
-var upgrader = websocket.Upgrader{} // use default options
+var upgrader = websocket.Upgrader{
+  ReadBufferSize:  1024,
+  WriteBufferSize: 1024,
+  CheckOrigin: func(r *http.Request) bool { return true },
+}
 
 type Sale struct {
 	IconUrl string
@@ -108,9 +114,21 @@ func readPostCodes()(postCodes []PostCode) {
 	return
 }
 
+func images(w http.ResponseWriter, r *http.Request) {
+  var Path = "images/nike.png"
+  img, err := os.Open(Path)
+  if err != nil {
+    log.Fatal(err) // perhaps handle this nicer
+  }
+  defer img.Close()
+  w.Header().Set("Content-Type", "image/png")
+  io.Copy(w, img)
+}
+
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
 	http.HandleFunc("/", echo)
+  http.HandleFunc("/images", images)
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
