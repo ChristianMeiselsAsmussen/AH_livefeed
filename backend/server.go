@@ -12,10 +12,9 @@ import (
 	"net/http"
 	"fmt"
 	"time"
-  "io"
-  "os"
 	"io/ioutil"
 	"github.com/gorilla/websocket"
+  "github.com/yookoala/realpath"
 	"encoding/json"
 	"math/rand"
 )
@@ -56,9 +55,10 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Close()
 	for {
-		time.Sleep(2 * time.Second)
+    sleepTime := rand.Intn(10)
+		time.Sleep(time.Duration(sleepTime) * time.Second)
 
-		sales := getProducts(1, rand.Intn(10))
+		sales := getProducts(1, rand.Intn(10) + 1)
 		salesJson, err := json.Marshal(sales)
 
 		if err != nil {
@@ -78,12 +78,11 @@ func echo(w http.ResponseWriter, r *http.Request) {
 func getProducts(lastId int, numProducts int)(sales []Sale) {
 	sales = []Sale{}
 
-	randBrand := rand.Intn(len(brands))
-	randZip := rand.Intn(len(postCodes))
-
 	for i := 0; i < numProducts; i++ {
+    randBrand := rand.Intn(len(brands))
+  	randZip := rand.Intn(len(postCodes))
 		mySale := Sale {
-			IconUrl: brands[randBrand].IconUrl,
+			IconUrl: "http://127.0.0.1:8888/images/" + brands[randBrand].IconUrl,
 			Lat:     postCodes[randZip].Lat,
 			Lon:     postCodes[randZip].Lon,
 		}
@@ -113,21 +112,18 @@ func readPostCodes()(postCodes []PostCode) {
 	return
 }
 
-func images(w http.ResponseWriter, r *http.Request) {
-  var Path = "images/nike.png"
-  img, err := os.Open(Path)
-  if err != nil {
-    log.Fatal(err) // perhaps handle this nicer
-  }
-  defer img.Close()
-  w.Header().Set("Content-Type", "image/png")
-  io.Copy(w, img)
-}
-
 func main() {
 	flag.Parse()
 	log.SetFlags(0)
 	http.HandleFunc("/", echo)
-  http.HandleFunc("/images", images)
+
+  path, err := realpath.Realpath("images")
+  if err != nil {
+    log.Print("Could not resolve path:", err)
+    return
+  }
+  fs := http.FileServer(http.Dir(path))
+  http.Handle("/images/", http.StripPrefix("/images", fs))
+
 	log.Fatal(http.ListenAndServe(*addr, nil))
 }
