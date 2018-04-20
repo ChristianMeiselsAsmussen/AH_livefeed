@@ -21,7 +21,7 @@ import (
 
 var brands = readBrands()
 var postCodes = readPostCodes()
-var stores = readStores()
+var storesList = readStores()
 
 var addr = flag.String("addr", "localhost:8888", "http service address")
 
@@ -49,9 +49,11 @@ type PostCode struct {
 }
 
 type Store struct {
-	Id   string
-	Lat  float64
-	Lon  float64
+	Id          int
+	Turnover    float32
+	Lat         float64
+	Lon         float64
+	Incremented bool
 }
 
 func echo(w http.ResponseWriter, r *http.Request) {
@@ -80,6 +82,54 @@ func echo(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+}
+
+func stores(w http.ResponseWriter, r *http.Request) {
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	defer c.Close()
+
+	for {
+		sleepTime := rand.Intn(10)
+		time.Sleep(time.Duration(sleepTime) * time.Second)
+
+		storesJson, err := json.Marshal(stores)
+
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		err = c.WriteMessage(websocket.TextMessage, storesJson)
+		if err != nil {
+			log.Println("write:", err)
+			break
+		}
+	}
+}
+
+/*
+func getStoreTurnOver(Id int)(newTurnover float32)  {
+	stores[Id].turnover += rand.Intn(20)*1000
+	return
+}
+*/
+func getStores() (storesList []Store) {
+	storesList = []Store{}
+	for i := 0; i < len(storesList); i++{
+		myStore := Store{
+			Id:         stores[Id],
+			Turnover:    stores[i].Turnover + 1000,
+			Lat:         stores[i].Lat,
+			Lon:         stores[i].Lon,
+			Incremented: true,
+		}
+		stores = append(sales, mySale)
+	}
+	return
 }
 
 func getProducts(lastId int, numProducts int) (sales []Sale) {
@@ -122,7 +172,7 @@ func readPostCodes() (postCodes []PostCode) {
 func readStores() (stores []Store) {
 	storesJson, err := ioutil.ReadFile("stores.json")
 	if err != nil {
-		log.Print("Could not read stores data:", err)
+		log.Print("Could not read storesData data:", err)
 		return
 	}
 	json.Unmarshal(storesJson, &stores)
@@ -133,7 +183,7 @@ func main() {
 	flag.Parse()
 	log.SetFlags(0)
 	http.HandleFunc("/", echo)
-
+	http.HandleFunc("/", stores)
 	path, err := realpath.Realpath("images")
 	if err != nil {
 		log.Print("Could not resolve path:", err)
