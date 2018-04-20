@@ -45,7 +45,7 @@ const addTempFeatures = (data, target) => {
     if (i > 0 ) return;
     const markerEl = getMarker();
     const marker = new mapboxgl.Marker(markerEl)
-      .setLngLat([item.Lat, item.Lon])
+      .setLngLat([item.Lon, item.Lat])
       .addTo(map);
     TweenMax.from(markerEl, .35, {ease: Back.easeOut, alpha:0, scale:0, delay: Math.random()});
     TweenMax.to(markerEl, .35, {ease: Sine.easeOut, alpha:0, scale:30, delay: 5});
@@ -76,7 +76,7 @@ const setupWebSocket = () => {
   }
 }
 
-const websocket_connection = (setupWebSocket)(); 
+const websocket_connection = (setupWebSocket)();
 
 var points = {
   "type": "FeatureCollection",
@@ -91,12 +91,12 @@ var points = {
     "geometry" : {
       "type": "Point",
       "coordinates": [10.5, 55.5]
-    }    
+    }
   }]
 }
 
 map.on('load', function () {
-  
+
   // addSource(map, 'cola', points);
 
   // addFeatures(points, map);
