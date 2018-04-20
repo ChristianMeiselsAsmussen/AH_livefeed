@@ -17,6 +17,7 @@ import (
 	"io/ioutil"
 	"github.com/gorilla/websocket"
 	"encoding/json"
+	"math/rand"
 )
 
 var brands = readBrands()
@@ -32,8 +33,8 @@ var upgrader = websocket.Upgrader{
 
 type Sale struct {
 	IconUrl string
-	Lat     string
-	Lon     string
+	Lat     float64
+	Lon     float64
 }
 
 type Brand struct {
@@ -43,8 +44,8 @@ type Brand struct {
 
 type PostCode struct {
 	PostCode  string
-	Lat       string
-	Lon       string
+	Lat       float64
+	Lon       float64
 }
 
 func echo(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +58,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	for {
 		time.Sleep(2 * time.Second)
 
-		sales := getProducts(1)
+		sales := getProducts(1, rand.Intn(10))
 		salesJson, err := json.Marshal(sales)
 
 		if err != nil {
@@ -73,24 +74,22 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getProducts(lastId int)(sales []Sale) {
+
+func getProducts(lastId int, numProducts int)(sales []Sale) {
 	sales = []Sale{}
 
-	mySale := Sale {
-		IconUrl: "xxx",
-		Lat:     "yyy",
-		Lon:     "zzz",
+	randBrand := rand.Intn(len(brands))
+	randZip := rand.Intn(len(postCodes))
+
+	for i := 0; i < numProducts; i++ {
+		mySale := Sale {
+			IconUrl: brands[randBrand].IconUrl,
+			Lat:     postCodes[randZip].Lat,
+			Lon:     postCodes[randZip].Lon,
+		}
+		sales = append(sales, mySale)
 	}
 
-	sales = append(sales, mySale)
-
-	mySale = Sale {
-		IconUrl: "dfgdfsg",
-		Lat:     "ydfgyy",
-		Lon:     "dfgdfg",
-	}
-
-	sales = append(sales, mySale)
 	return
 }
 
