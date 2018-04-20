@@ -21,6 +21,7 @@ import (
 
 var brands = readBrands()
 var postCodes = readPostCodes()
+var stores = readStores()
 
 var addr = flag.String("addr", "localhost:8888", "http service address")
 
@@ -45,6 +46,12 @@ type PostCode struct {
 	PostCode string
 	Lat      float64
 	Lon      float64
+}
+
+type Store struct {
+	Id   string
+	Lat  float64
+	Lon  float64
 }
 
 func echo(w http.ResponseWriter, r *http.Request) {
@@ -109,6 +116,16 @@ func readPostCodes() (postCodes []PostCode) {
 		return
 	}
 	json.Unmarshal(postCodesJson, &postCodes)
+	return
+}
+
+func readStores() (stores []Store) {
+	storesJson, err := ioutil.ReadFile("stores.json")
+	if err != nil {
+		log.Print("Could not read stores data:", err)
+		return
+	}
+	json.Unmarshal(storesJson, &stores)
 	return
 }
 
