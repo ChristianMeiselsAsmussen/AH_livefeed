@@ -7,15 +7,15 @@
 package main
 
 import (
-	"flag"
-	"log"
-	"net/http"
-	"fmt"
-	"time"
-	"io/ioutil"
-	"github.com/gorilla/websocket"
 	"encoding/json"
+	"flag"
+	"fmt"
+	"github.com/gorilla/websocket"
+	"io/ioutil"
+	"log"
 	"math/rand"
+	"net/http"
+	"time"
 )
 
 var brands = readBrands()
@@ -37,9 +37,9 @@ type Brand struct {
 }
 
 type PostCode struct {
-	PostCode  string
-	Lat       float64
-	Lon       float64
+	PostCode string
+	Lat      float64
+	Lon      float64
 }
 
 func echo(w http.ResponseWriter, r *http.Request) {
@@ -49,6 +49,7 @@ func echo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer c.Close()
+
 	for {
 		time.Sleep(2 * time.Second)
 
@@ -68,15 +69,13 @@ func echo(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-func getProducts(lastId int, numProducts int)(sales []Sale) {
+func getProducts(lastId int, numProducts int) (sales []Sale) {
 	sales = []Sale{}
 
-	randBrand := rand.Intn(len(brands))
-	randZip := rand.Intn(len(postCodes))
-
 	for i := 0; i < numProducts; i++ {
-		mySale := Sale {
+		randBrand := rand.Intn(len(brands))
+		randZip := rand.Intn(len(postCodes))
+		mySale := Sale{
 			IconUrl: brands[randBrand].IconUrl,
 			Lat:     postCodes[randZip].Lat,
 			Lon:     postCodes[randZip].Lon,
@@ -87,7 +86,7 @@ func getProducts(lastId int, numProducts int)(sales []Sale) {
 	return
 }
 
-func readBrands()(brands []Brand) {
+func readBrands() (brands []Brand) {
 	brandJson, err := ioutil.ReadFile("brands.json")
 	if err != nil {
 		log.Print("Could not read brands data:", err)
@@ -97,7 +96,7 @@ func readBrands()(brands []Brand) {
 	return
 }
 
-func readPostCodes()(postCodes []PostCode) {
+func readPostCodes() (postCodes []PostCode) {
 	postCodesJson, err := ioutil.ReadFile("zip_point.json")
 	if err != nil {
 		log.Print("Could not read postCodes data:", err)
