@@ -1,0 +1,17 @@
+[
+  {"Name": "adidas", "IconUrl": "adidas.png"},
+  {"Name": "asics", "IconUrl": "asics.png"},
+  {"Name": "bjorn-borg", "IconUrl": "bjorn-borg.png"},
+  {"Name": "ecco", "IconUrl": "ecco.png"},
+  {"Name": "helly-hansen", "IconUrl": "helly-hansen.png"},
+  {"Name": "hummel", "IconUrl": "hummel.png"},
+  {"Name": "kari-traa", "IconUrl": "kari-traa.png"},
+  {"Name": "new-balance", "IconUrl": "new-balance.png"},
+  {"Name": "newline", "IconUrl":" newline.png"},
+  {"Name": "nike", "IconUrl": "nike.png"},
+  {"Name": "peak-performance", "IconUrl": "peak-performance.png"},
+  {"Name": "puma", "IconUrl": "puma.png"},
+  {"Name": "reebok", "IconUrl": "reebok.png"},
+  {"Name": "salomon", "IconUrl": "salomon.png"},
+  {"Name": "under-armour", "IconUrl": "under-armour.png"}
+]
