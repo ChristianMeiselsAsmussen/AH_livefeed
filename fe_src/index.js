@@ -1,3 +1,4 @@
+import { TweenMax } from 'gsap';
 mapboxgl.accessToken = 'pk.eyJ1IjoiYWRhcHQtYXNtdXNzZW4iLCJhIjoiY2pnN3h3dmUxMzB4aDJ5bW9vb2IzNmliMSJ9.Xp1FKOwzQ9s8Q9ZEUuwZeg';
 
 let sources = [];
@@ -35,10 +36,11 @@ const addFeatures = (geojson, target) => {
     const marker = new mapboxgl.Marker(markerEl)
       .setLngLat(feature.geometry.coordinates)
       .addTo(map);
+    TweenMax.from(marker, 2, {alpha:0});
   })
 }
 
-var map = new mapboxgl.Map({
+const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/mapbox/light-v9',
   center: [9.501785, 56.263920],
@@ -46,6 +48,23 @@ var map = new mapboxgl.Map({
   minZoom: 5,
   maxZoom: 12,
 });
+
+const setupWebSocket = () => {
+
+  const web_socket = new WebSocket('ws://127.0.0.1:8888');
+
+  web_socket.onopen = (event) => {
+
+    web_socket.send("Here's some text client has sent to server upon socketd open event!");
+  };
+
+  web_socket.onmessage = (event) => {
+    console.log(event.data);
+  }
+  console.log("hej");
+}
+
+const websocket_connection = (setupWebSocket)(); 
 
 var points = {
   "type": "FeatureCollection",
